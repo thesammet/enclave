@@ -13,7 +13,7 @@ export function SideNav() {
   const pending = useApprovals((s) => s.pending.length)
 
   return (
-    <nav className="flex w-[190px] shrink-0 flex-col gap-0.5 border-r border-neutral-200 p-2 dark:border-neutral-800">
+    <nav data-tour="nav" className="flex w-[190px] shrink-0 flex-col gap-0.5 border-r border-neutral-200 p-2 dark:border-neutral-800">
       <div className="px-2 pt-1 pb-3">
         <div className="text-xs font-medium text-neutral-900 dark:text-neutral-100">
           Northwind Trading Co.

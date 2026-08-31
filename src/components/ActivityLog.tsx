@@ -9,7 +9,7 @@ export function ActivityLog() {
   const bytesOut = useStore((s) => s.bytesOut)
 
   return (
-    <div className="flex h-full flex-col border-t border-neutral-200 dark:border-neutral-800">
+    <div data-tour="activity" className="flex h-full flex-col border-t border-neutral-200 dark:border-neutral-800">
       <div className="px-3 pt-2 pb-1 text-[10px] font-medium uppercase tracking-wide text-neutral-400">
         Activity
       </div>

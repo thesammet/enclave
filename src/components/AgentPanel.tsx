@@ -217,9 +217,10 @@ export function AgentPanel({ ctx }: { ctx: ToolContext }) {
             <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
               Try asking
             </p>
-            {SUGGESTIONS.map((s) => (
+            {SUGGESTIONS.map((s, i) => (
               <button
                 key={s}
+                data-tour={i === 0 ? 'suggestion' : undefined}
                 onClick={() => send(s)}
                 className="group flex w-full items-start gap-2 rounded-md border border-neutral-200
                   px-2.5 py-2 text-left text-xs text-neutral-600 transition hover:border-neutral-400

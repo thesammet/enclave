@@ -1,5 +1,6 @@
 import { isWebMcpAvailable } from '../runtime/webmcp'
 import { navigate } from '../router'
+import { useTour } from '../store/tour'
 import { BoardsMenu } from './BoardsMenu'
 import { SettingsMenu } from './SettingsMenu'
 
@@ -29,6 +30,17 @@ export function TopBar() {
       </span>
 
       <div className="ml-auto flex items-center gap-1">
+        <button
+          onClick={useTour.getState().start}
+          title="Show me around"
+          aria-label="Show me around"
+          className="flex h-6 w-6 items-center justify-center rounded-full border
+            border-neutral-300 text-[11px] text-neutral-500 transition hover:border-neutral-500
+            hover:text-neutral-900 dark:border-neutral-700 dark:hover:border-neutral-500
+            dark:hover:text-neutral-100"
+        >
+          ?
+        </button>
         <BoardsMenu />
         <SettingsMenu />
         <a

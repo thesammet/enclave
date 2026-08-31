@@ -1,10 +1,13 @@
+import { useEffect } from 'react'
 import { EngineProvider, useEngine } from '../app/EngineContext'
 import { ActivityLog } from '../components/ActivityLog'
 import { AgentPanel } from '../components/AgentPanel'
 import { ApprovalPanel } from '../components/ApprovalPanel'
 import { SideNav } from '../components/SideNav'
 import { TopBar } from '../components/TopBar'
+import { Tour } from '../components/Tour'
 import { usePath } from '../router'
+import { hasSeenTour, useTour } from '../store/tour'
 import { Analytics } from './Analytics'
 import { Orders } from './Orders'
 import { Overview } from './Overview'
@@ -27,7 +30,17 @@ function Section() {
 }
 
 function Layout() {
-  const { ctx } = useEngine()
+  const { ctx, loading } = useEngine()
+  const startTour = useTour((s) => s.start)
+
+  // Only once the panels hold real content — a tour pointing at skeletons
+  // teaches nothing.
+  useEffect(() => {
+    if (loading || hasSeenTour()) return
+    const t = setTimeout(startTour, 700)
+    return () => clearTimeout(t)
+  }, [loading, startTour])
+
   return (
     <div className="flex h-screen flex-col bg-neutral-100 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
       <TopBar />
@@ -36,7 +49,10 @@ function Layout() {
         <main className="min-w-0 flex-1 overflow-y-auto p-6">
           <Section />
         </main>
-        <aside className="flex w-[360px] shrink-0 flex-col border-l border-neutral-200 dark:border-neutral-800">
+        <aside
+          data-tour="agent"
+          className="flex w-[360px] shrink-0 flex-col border-l border-neutral-200 dark:border-neutral-800"
+        >
           <ApprovalPanel />
           <div className="min-h-0 flex-1">
             <AgentPanel ctx={ctx} />
@@ -46,6 +62,7 @@ function Layout() {
           </div>
         </aside>
       </div>
+      <Tour />
     </div>
   )
 }
