@@ -109,7 +109,7 @@ rather than rhetorical.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 86 tests
+npm test         # 100 tests
 npm run build
 ```
 
@@ -139,6 +139,19 @@ neither.
 
 Paste an OpenAI key into the panel on the right. It is stored in your browser
 and sent only to `api.openai.com`. Your data still goes nowhere.
+
+## Saved boards
+
+A board is the analysis, not the data: the cards and the filter, never a row.
+Save one and it re-runs against whichever dataset is loaded — so the analysis
+can travel between machines while the data stays put. Boards live in
+`localStorage`.
+
+## The result budget is a dial
+
+The 50-row / 4 KB cap is the default, not a fixed law. Settings exposes it, so
+the person holding the data decides how much any single tool result may carry
+out of the browser. Lower it and the agent has to aggregate harder.
 
 ## Sample data
 

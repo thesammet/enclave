@@ -3,6 +3,7 @@
 **Live:** https://enclave-bay.vercel.app
 **Repo:** https://github.com/thesammet/enclave
 **Video:** _(to add)_
+**Landing page:** https://enclave-bay.vercel.app · **Workbench:** https://enclave-bay.vercel.app/app
 **Licence:** MIT
 
 ---
@@ -66,6 +67,11 @@ through the real browser API as a receipt.
 Two sample datasets load in one click, so a judge can try the product without
 finding a CSV first.
 
+It is a product, not a demo harness. A landing page explains the idea before you
+touch anything; the workbench carries saved boards, settings and a theme
+toggle. Nothing in the interface is decorative — every control does something,
+because a dead menu tells a judge more than a working one does.
+
 ## Potential impact
 
 The privacy claim is not rhetorical, it is metered. Every tool result passes
@@ -114,6 +120,6 @@ arguments". `inputSchema` comes back as a string too.
 
 ## What's next
 
-Multiple files and joins; Parquet and Excel; saving a board as a shareable
-recipe that re-runs against someone else's copy of the data — the analysis
-travels, the data does not.
+Multiple files and joins; Parquet and Excel; sharing a saved board as a link so
+someone else's copy of Enclave re-runs it against their own data — the analysis
+travels, the data never does.
