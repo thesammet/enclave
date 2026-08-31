@@ -16,7 +16,7 @@ const errors = []
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()) })
 page.on('pageerror', (e) => errors.push(String(e)))
 
-await page.goto(url, { waitUntil: 'domcontentloaded' })
+await page.goto(new URL('/app', url).href, { waitUntil: 'domcontentloaded' })
 await page.getByText('Retail sales').click()
 await page.waitForSelector('text=/rows/', { timeout: 90000 })
 await page.waitForTimeout(1200)

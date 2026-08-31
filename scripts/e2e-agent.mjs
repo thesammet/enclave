@@ -23,7 +23,7 @@ await page.addInitScript(() => {
   }
 })
 
-await page.goto(url, { waitUntil: 'domcontentloaded' })
+await page.goto(new URL('/app', url).href, { waitUntil: 'domcontentloaded' })
 console.log('registered tools:', await page.evaluate(() => Object.keys(window.__tools).length))
 
 await page.getByText('Retail sales').click()

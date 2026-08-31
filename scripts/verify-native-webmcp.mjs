@@ -9,7 +9,7 @@ const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } })
 const errors = []
 page.on('pageerror', (e) => errors.push(String(e)))
 
-await page.goto(url, { waitUntil: 'domcontentloaded' })
+await page.goto(new URL('/app', url).href, { waitUntil: 'domcontentloaded' })
 
 console.log('API surface:', await page.evaluate(() =>
   Object.getOwnPropertyNames(Object.getPrototypeOf(document.modelContext)),

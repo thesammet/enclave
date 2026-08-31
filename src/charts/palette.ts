@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useTheme } from '../store/theme'
 
 /**
  * Values from the dataviz skill's reference palette, validated with its
@@ -65,20 +65,7 @@ export const DARK = {
   series: SERIES_DARK,
 }
 
-export function useIsDark(): boolean {
-  const [dark, setDark] = useState(
-    () => window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false,
-  )
-  useEffect(() => {
-    const mq = window.matchMedia?.('(prefers-color-scheme: dark)')
-    if (!mq) return
-    const on = (e: MediaQueryListEvent) => setDark(e.matches)
-    mq.addEventListener('change', on)
-    return () => mq.removeEventListener('change', on)
-  }, [])
-  return dark
-}
-
+/** Charts follow the same theme the rest of the page does. */
 export function usePalette() {
-  return useIsDark() ? DARK : LIGHT
+  return useTheme((s) => s.theme) === 'dark' ? DARK : LIGHT
 }

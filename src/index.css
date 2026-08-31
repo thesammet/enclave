@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+/* Tailwind 4 keys `dark:` off prefers-color-scheme by default. Enclave has a
+   theme toggle, so the variant follows a class on <html> instead; the initial
+   class still comes from the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));

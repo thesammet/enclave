@@ -3,6 +3,8 @@ import { type ToolContext, type ToolDef, assertSelectOnly } from './registry'
 
 const q = (ident: string) => `"${ident.replace(/"/g, '""')}"`
 
+const limits = (ctx: ToolContext) => ctx.store.getState().resultBudget
+
 function requireSchema(ctx: ToolContext) {
   const schema = ctx.engine.getSchema()
   if (!schema) {
@@ -58,8 +60,8 @@ export const dataTools: ToolDef[] = [
       const top = await ctx.engine.query(
         `SELECT ${q(column)} AS value, count(*)::BIGINT AS n FROM data GROUP BY 1 ORDER BY n DESC LIMIT 10`,
       )
-      return `Profile of "${column}":\n${budget(stats).text}\nMost frequent values:\n${
-        budget(top).text
+      return `Profile of "${column}":\n${budget(stats, limits(ctx)).text}\nMost frequent values:\n${
+        budget(top, limits(ctx)).text
       }`
     },
   },
@@ -78,7 +80,7 @@ export const dataTools: ToolDef[] = [
     async execute({ limit = 5 }: { limit?: number }, ctx) {
       requireSchema(ctx)
       const n = Math.max(1, Math.min(20, Math.floor(limit)))
-      return budget(await ctx.engine.query(`SELECT * FROM data LIMIT ${n}`)).text
+      return budget(await ctx.engine.query(`SELECT * FROM data LIMIT ${n}`), limits(ctx)).text
     },
   },
 
@@ -100,7 +102,7 @@ export const dataTools: ToolDef[] = [
     async execute({ sql }: { sql: string }, ctx) {
       requireSchema(ctx)
       assertSelectOnly(sql)
-      return budget(await ctx.engine.query(sql)).text
+      return budget(await ctx.engine.query(sql), limits(ctx)).text
     },
   },
 ]

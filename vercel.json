@@ -4,5 +4,6 @@
       "source": "/(.*)",
       "headers": [{ "key": "Origin-Agent-Cluster", "value": "?1" }]
     }
-  ]
+  ],
+  "rewrites": [{ "source": "/app", "destination": "/index.html" }]
 }

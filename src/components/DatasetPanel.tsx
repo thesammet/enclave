@@ -21,13 +21,8 @@ export function DatasetPanel() {
 
   return (
     <div className="p-3">
-      <div className="pb-2">
-        <div className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
-          Dataset
-        </div>
-        <div className="text-sm tabular-nums text-neutral-900 dark:text-neutral-100">
-          {schema.rowCount.toLocaleString()} rows
-        </div>
+      <div className="pb-2 text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+        Columns
       </div>
 
       {globalFilter && (

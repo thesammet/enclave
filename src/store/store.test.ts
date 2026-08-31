@@ -70,6 +70,26 @@ describe('store', () => {
     expect(useStore.getState().schema).not.toBeNull()
   })
 
+  it('clamps the result budget to a sane range', () => {
+    useStore.getState().setResultBudget({ maxRows: 9999, maxBytes: 10 })
+    expect(useStore.getState().resultBudget).toEqual({ maxRows: 500, maxBytes: 256 })
+    useStore.getState().setResultBudget({ maxRows: 0, maxBytes: 999999 })
+    expect(useStore.getState().resultBudget).toEqual({ maxRows: 1, maxBytes: 32768 })
+  })
+
+  it('defaults the result budget to 50 rows and 4 KB', () => {
+    expect(useStore.getState().resultBudget).toEqual({ maxRows: 50, maxBytes: 4096 })
+  })
+
+  it('loads a saved board over the current one, undoably', () => {
+    useStore.getState().addCard({ kind: 'note', title: 'Old', span: 1 })
+    useStore.getState().loadBoard([{ id: 'x', kind: 'note', title: 'New', span: 1 }], "region = 'EMEA'")
+    expect(useStore.getState().cards.map((c) => c.title)).toEqual(['New'])
+    expect(useStore.getState().globalFilter).toBe("region = 'EMEA'")
+    useStore.getState().undo()
+    expect(useStore.getState().cards.map((c) => c.title)).toEqual(['Old'])
+  })
+
   it('accumulates bytesOut across logged calls', () => {
     useStore.getState().logCall({ tool: 'get_schema', args: {}, bytes: 100, ms: 1, ok: true })
     useStore.getState().logCall({ tool: 'run_sql', args: {}, bytes: 47, ms: 2, ok: true })

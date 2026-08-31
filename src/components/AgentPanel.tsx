@@ -58,17 +58,8 @@ export function AgentPanel({ ctx }: { ctx: ToolContext }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2 px-3 py-2 text-xs">
-        <span
-          className={`h-1.5 w-1.5 rounded-full ${native ? 'bg-emerald-500' : 'bg-neutral-400'}`}
-        />
-        <span className="font-medium uppercase tracking-wide text-neutral-400">
-          {native ? 'Native WebMCP' : 'Built-in agent'}
-        </span>
-      </div>
-
       {!apiKey && (
-        <div className="mx-3 space-y-2 rounded-md border border-neutral-200 p-3 dark:border-neutral-800">
+        <div className="m-3 space-y-2 rounded-md border border-neutral-200 p-3 dark:border-neutral-800">
           <p className="text-xs leading-relaxed text-neutral-500">
             {native
               ? 'ChatGPT can drive this page directly. To use this panel instead, paste an OpenAI key.'

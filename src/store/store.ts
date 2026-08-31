@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { DEFAULT_LIMITS, type Limits } from '../data/budget'
 import type { Schema } from '../data/types'
 import type { AuditEntry, Card } from './types'
 
@@ -17,6 +18,8 @@ interface State {
   auditLog: AuditEntry[]
   bytesOut: number
   history: Snapshot[]
+  /** How much any single tool result may carry out of the browser. */
+  resultBudget: Limits
 
   setSchema: (schema: Schema | null) => void
   addCard: (card: Omit<Card, 'id'>) => string
@@ -28,6 +31,8 @@ interface State {
   setGlobalFilter: (where: string | null) => void
   undo: () => boolean
   logCall: (entry: Omit<AuditEntry, 'id' | 'at'>) => void
+  setResultBudget: (limits: Limits) => void
+  loadBoard: (cards: Card[], globalFilter: string | null) => void
 }
 
 let counter = 0
@@ -48,6 +53,7 @@ export const useStore = create<State>((set, get) => {
     auditLog: [],
     bytesOut: 0,
     history: [],
+    resultBudget: DEFAULT_LIMITS,
 
     setSchema: (schema) => set({ schema }),
 
@@ -102,6 +108,19 @@ export const useStore = create<State>((set, get) => {
         history: history.slice(0, -1),
       })
       return true
+    },
+
+    setResultBudget: (limits) =>
+      set({
+        resultBudget: {
+          maxRows: Math.max(1, Math.min(500, Math.round(limits.maxRows))),
+          maxBytes: Math.max(256, Math.min(32768, Math.round(limits.maxBytes))),
+        },
+      }),
+
+    loadBoard: (cards, globalFilter) => {
+      push()
+      set({ cards, globalFilter, filterVersion: get().filterVersion + 1 })
     },
 
     logCall: (entry) =>

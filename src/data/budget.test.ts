@@ -34,6 +34,18 @@ describe('budget', () => {
     expect(parsed.length).toBeLessThanOrEqual(MAX_ROWS)
   })
 
+  it('honours a caller-supplied row limit', () => {
+    const out = budget(make(100), { maxRows: 5, maxBytes: MAX_BYTES })
+    expect(out.text).toContain('showing 5 of 100')
+    expect(JSON.parse(out.text.slice(out.text.indexOf('[')))).toHaveLength(5)
+  })
+
+  it('honours a caller-supplied byte limit', () => {
+    const out = budget(make(40), { maxRows: MAX_ROWS, maxBytes: 300 })
+    expect(out.bytes).toBeLessThanOrEqual(300)
+    expect(out.truncated).toBe(true)
+  })
+
   it('handles an empty result', () => {
     const out = budget({ columns: ['a'], rows: [] })
     expect(out.truncated).toBe(false)
