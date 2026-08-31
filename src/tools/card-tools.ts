@@ -184,7 +184,9 @@ export const cardTools: ToolDef[] = [
 
   {
     name: 'remove_card',
-    description: 'Delete a card from the board.',
+    description:
+      'Delete a card from the board by its id. Use read_dashboard first if you do not know ' +
+      'the id. The deletion can be reversed with the undo tool.',
     inputSchema: {
       type: 'object',
       properties: { id: { type: 'string' } },
