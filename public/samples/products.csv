@@ -1,0 +1,22 @@
+product_id,name,category,supplier,price,stock,reorder_level
+SKU-1001,"Nimbus Wireless Earbuds",Electronics,"Aurora Supply",159.42,0,42
+SKU-1002,"Nimbus Charging Dock",Electronics,"Aurora Supply",209.95,0,86
+SKU-1003,"Halo Smart Bulb 4-pack",Electronics,"Aurora Supply",213.51,0,96
+SKU-1004,"Halo Motion Sensor",Electronics,"Aurora Supply",151.75,0,43
+SKU-1005,"Vector Bluetooth Speaker",Electronics,"Kestrel Devices",25.66,136,72
+SKU-1006,"Vector Soundbar",Electronics,"Kestrel Devices",101.5,175,89
+SKU-1007,"Merino Crew Sweater",Apparel,"Loom & Co",25.99,141,68
+SKU-1008,"Rain Shell Jacket",Apparel,"Loom & Co",92.43,66,57
+SKU-1009,"Everyday Chino",Apparel,"Loom & Co",101.1,256,78
+SKU-1010,"Cast Iron Skillet",Home,"Hearth Goods",49.99,149,83
+SKU-1011,"Linen Duvet Set",Home,"Hearth Goods",22.41,119,73
+SKU-1012,"Stoneware Mug Set",Home,"Hearth Goods",71.11,273,85
+SKU-1013,"Rosewater Toner",Beauty,"Verdant Labs",87.93,126,47
+SKU-1014,"Clay Mask",Beauty,"Verdant Labs",78.42,222,70
+SKU-1015,"Repair Serum",Beauty,"Verdant Labs",80.54,66,49
+SKU-1016,"Trail Daypack 22L",Outdoor,"Ridgeline",43.08,42,57
+SKU-1017,"Insulated Bottle",Outdoor,"Ridgeline",97.29,58,79
+SKU-1018,"Camp Stove",Outdoor,"Ridgeline",48.28,131,45
+SKU-1019,"Single-Origin Coffee 1kg",Grocery,"Field & Vine",15.08,195,71
+SKU-1020,"Olive Oil 750ml",Grocery,"Field & Vine",72.68,162,49
+SKU-1021,"Wildflower Honey",Grocery,"Field & Vine",20.18,58,78

@@ -1,6 +1,6 @@
 # Enclave
 
-**Drag your data in. Let ChatGPT analyse it without ever seeing it.**
+**A back-office your AI agent can actually operate.**
 
 🔗 **[enclave-bay.vercel.app](https://enclave-bay.vercel.app)** · Built for [The WebMCP Challenge](https://webmcp.devpost.com/)
 
@@ -8,62 +8,73 @@
 
 ---
 
+## What it is
+
+Enclave is a commerce back-office for Northwind Trading Co., a fictional store.
+Its orders and catalogue load into the browser tab and stop there. An AI agent —
+ChatGPT over WebMCP, or the built-in panel — works the business through **22
+registered tools**: it investigates, and when it wants to change something, it
+proposes and waits for you.
+
+It never receives a row of the data it is reasoning about.
+
 ## The problem
 
-You cannot paste your company's sales figures, your patients' records, or your
-users' export into ChatGPT. So the most capable analyst available to you is
-locked out of exactly the data you most need help with. Uploading to a hosted
-notebook does not solve it either — the data still leaves the machine.
+Two things stop an agent being useful in a real business.
 
-## What Enclave does
+**It cannot see your data.** Revenue, customers, orders — none of it can be
+pasted into a chat window, so the analysis never happens.
 
-Drop a CSV on the page. DuckDB-WASM holds it in the tab's memory and runs real
-SQL over it. The file is never uploaded.
+**And it should not be clicking around your admin panel.** An agent guessing its
+way through a UI is slow, brittle, and occasionally catastrophic.
 
-An AI agent — ChatGPT over WebMCP, or the built-in panel — **cannot see the
-data**. It can only call the sixteen tools this page registers. Using them it
-profiles columns, runs queries, and assembles a dashboard of KPI, chart, table
-and note cards. You work on the same board: reordering, resizing, deleting by
-hand.
+WebMCP answers both: the page states exactly what an agent may do, the data stays
+where it is, and anything consequential waits for a human.
 
-The Activity Log on the right counts every byte that left the browser. In the
-screenshot above, a full exploratory analysis of 50,000 rows cost **2,256
-bytes** and zero rows uploaded.
+## The arc the demo store carries
 
-## The sixteen tools
+The data has one real problem in it, and the whole route to the fix is
+discoverable without the agent ever seeing a row.
 
-**Explore the data** — read-only
+1. **It notices.** Revenue by region, month by month — EMEA falls 52% in March
+   2025 and no other region moves.
+2. **It finds the cause.** Broken down by supplier, one name is missing from
+   March entirely: Aurora Supply sold nothing in EMEA that month.
+3. **It checks the shelf.** All four Aurora products are still at zero stock,
+   below their reorder level. The revenue hole and the empty shelf are the same
+   fact.
+4. **You decide.** It proposes a restock order with its reasoning and stops.
+   Nothing changes until you approve it on screen.
 
-| Tool | Behaviour |
-|---|---|
-| `get_schema` | Columns, SQL types, row count |
-| `profile_column` | Nulls, distinct count, min/max, ten most frequent values |
-| `sample_rows` | A few raw rows for orientation, capped at 20 |
-| `run_sql` | Arbitrary DuckDB `SELECT` against the table `data` |
+![The approval seam](docs/images/approval.png)
 
-**Build the board**
+## Nothing changes without you
 
-| Tool | Behaviour |
-|---|---|
-| `add_kpi` | Single-number card |
-| `add_chart` | bar / line / area / scatter / pie, fed by SQL |
-| `add_table` | Query-result table |
-| `add_note` | Markdown card — where the agent records its finding |
-| `update_card` | Change title, query or chart configuration |
-| `remove_card` · `reorder_cards` · `resize_card` | Layout |
-| `highlight_points` | Emphasise specific x values on a chart |
+Reading is free. Anything that touches the business — a restock order, a price —
+is *proposed*: the tool call blocks, an approval card appears carrying the
+agent's reasoning, and the change is applied only on approval. Decline, or take
+too long, and the tool reports back that nothing happened.
 
-**Read the board and control it**
+That pause is the product. It is where the human and the agent actually meet.
 
-| Tool | Behaviour |
-|---|---|
-| `read_dashboard` | Every card with its id, kind, title and query |
-| `set_global_filter` | One `WHERE` clause across the whole board at once |
-| `undo` | Revert the last board change |
+## The tools
+
+**Explore the data** — `get_schema` · `profile_column` · `sample_rows` · `run_sql`
+
+**Build the analysis** — `add_kpi` · `add_chart` · `add_table` · `add_note` ·
+`update_card` · `remove_card` · `reorder_cards` · `resize_card` ·
+`highlight_points`
+
+**Read it back and steer** — `read_dashboard` · `set_global_filter` · `undo`
+
+**Run the store** — `search_orders` · `get_product` · `list_low_stock` ·
+`list_restock_orders` · `create_restock_order`\* · `set_product_price`\*
+
+\* requires operator approval.
 
 The surface is deliberately **bidirectional**: the agent can read the current
-state of both the data and the board, not only write to them. `read_dashboard`
-is what lets it revise work it did not do itself.
+state of the data, the analysis board and the catalogue, not only write to them.
+`read_dashboard` is what lets it revise an analysis it did not build itself.
 
 ## How it is built
 
@@ -72,48 +83,53 @@ is what lets it revise work it did not do itself.
              │                                                     │
   ChatGPT ───┼──→ document.modelContext ──┐                        │
              │                            ├──→ TOOL REGISTRY       │
-  Built-in ──┼──→ OpenAI Responses API ───┘    (16 tools, one      │
-  panel      │    (your own key,                definition site)   │
-             │     browser → api.openai.com)         │             │
-             │                                       ▼             │
-             │                              Zustand store          │
-             │                              ├─ dataset             │
-             │                              ├─ cards[]             │
-             │                              └─ auditLog[]          │
+  Built-in ──┼──→ OpenAI Responses API ───┘    (22 tools, one      │
+  panel      │    (your own key)                definition site)   │
              │                                       │             │
-             │                                       ▼             │
-             │                          DuckDB-WASM ←── your CSV   │
-             │                          (tab memory)               │
+             │                        ┌──────────────┴───────────┐ │
+             │                        ▼                          ▼ │
+             │                 approval gate            DuckDB-WASM │
+             │                 (writes only)            store data  │
              └─────────────────────────────────────────────────────┘
-                    no server. data never leaves the tab.
+                    no server · data never leaves the tab
 ```
 
 **One registry, two runtimes.** Tools are defined once in `src/tools/`. One
 adapter registers them with `document.modelContext`; another exposes the same
-list to the OpenAI Responses API for the built-in panel. The capability surface
-is identical no matter which agent drives it.
+list to the OpenAI Responses API. Identical capabilities, identical approval
+gates, either way.
 
-**The global filter is a view swap.** Cards read from the view `data`, never the
-base table `raw`. `set_global_filter` runs one statement —
-`CREATE OR REPLACE VIEW data AS SELECT * FROM raw WHERE …` — and every card on
-the board re-renders against the filtered data.
+**The global filter is a view swap.** Analytics cards read from the view `data`
+— orders joined to their products. `set_global_filter` runs one statement,
+`CREATE OR REPLACE VIEW data AS SELECT * FROM (<base>) WHERE …`, and every card
+on the board re-renders against the filtered data.
 
-**Every result is budgeted.** Tool output passes through a single cap of
-**50 rows and 4 KB** before it can reach an agent. Raw row dumps are refused
-with a message steering the agent toward aggregation. This keeps the agent's
-context small, keeps queries honest, and makes the privacy claim measurable
-rather than rhetorical.
+**Every result is budgeted.** Tool output passes through a single cap of 50 rows
+and 4 KB before it can reach an agent — adjustable in settings, so the person
+holding the data sets the dial. Raw row dumps are refused with a message
+steering the agent toward aggregation.
+
+**Saved boards store the analysis, never the data.** Cards and the filter, so a
+board re-runs against whichever dataset is loaded.
 
 ## Running it
 
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 100 tests
+npm test         # 127 tests
 npm run build
 ```
 
-### Using it with native WebMCP
+Useful dev scripts:
+
+```bash
+node scripts/generate-samples.mjs        # regenerate the store's synthetic data
+node scripts/e2e-agent.mjs               # drive the whole arc as an agent would
+node scripts/verify-native-webmcp.mjs    # prove the native API sees the tools
+```
+
+### With native WebMCP
 
 WebMCP is available in Chrome 149+ behind an origin trial, or locally via
 `chrome://flags/#enable-webmcp-testing`. Verified here against Chromium 151
@@ -123,41 +139,28 @@ launched with `--enable-features=WebMCP`:
 node scripts/verify-native-webmcp.mjs https://enclave-bay.vercel.app
 ```
 
-That script is the receipt for the claim: it discovers all sixteen tools
-through the native `document.modelContext.getTools()` on the deployed URL and
-executes them. Two things worth knowing if you build against the native API:
-`executeTool` takes the arguments as a **JSON string**, not an object, and
-`inputSchema` comes back as a string too.
+That script is the receipt: it discovers all 22 tools through the native
+`document.modelContext.getTools()` on the deployed URL and executes them. Two
+things worth knowing if you build against the native API: `executeTool` takes
+its arguments as a **JSON string**, not an object, and `inputSchema` comes back
+as a string too.
 
 The page sets `Origin-Agent-Cluster: ?1` (see `vercel.json`), which WebMCP
-requires. It deliberately does **not** set COOP/COEP: that would make
-DuckDB's `selectBundle()` choose the threaded `coi` bundle and demand
-cross-origin isolation. Without those headers it selects `eh`, which needs
-neither.
+requires. It deliberately does **not** set COOP/COEP: that would make DuckDB's
+`selectBundle()` choose the threaded `coi` bundle and demand cross-origin
+isolation. Without those headers it picks `eh`, which needs neither.
 
-### Using it without WebMCP
+### Without WebMCP
 
 Paste an OpenAI key into the panel on the right. It is stored in your browser
 and sent only to `api.openai.com`. Your data still goes nowhere.
 
-## Saved boards
+## The data
 
-A board is the analysis, not the data: the cards and the filter, never a row.
-Save one and it re-runs against whichever dataset is loaded — so the analysis
-can travel between machines while the data stays put. Boards live in
-`localStorage`.
-
-## The result budget is a dial
-
-The 50-row / 4 KB cap is the default, not a fixed law. Settings exposes it, so
-the person holding the data decides how much any single tool result may carry
-out of the browser. Lower it and the agent has to aggregate harder.
-
-## Sample data
-
-`public/samples/` holds two synthetic datasets, generated deterministically by
-`scripts/generate-samples.mjs`. The retail one seeds a single finding for the
-agent to discover: EMEA revenue falls 68% in March 2025, and nowhere else.
+`public/samples/` holds Northwind's synthetic orders and catalogue, generated
+deterministically by `scripts/generate-samples.mjs` — the script documents
+exactly how the March stockout is seeded. Analytics also takes any CSV you drop
+on it.
 
 ## Stack
 

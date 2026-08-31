@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { type ChatMessage, runAgentTurn } from '../runtime/openai'
 import { isWebMcpAvailable } from '../runtime/webmcp'
-import type { ToolContext } from '../tools'
+import { allTools, type ToolContext } from '../tools'
 import { Button } from './ui/Button'
 import { Input } from './ui/Input'
 
@@ -9,9 +9,9 @@ const KEY_STORAGE = 'enclave.openai.key'
 const MODEL_STORAGE = 'enclave.openai.model'
 
 const SUGGESTIONS = [
-  'Explore this data and build me a dashboard',
-  'Which region underperformed, and when?',
-  'Show revenue by month, then highlight the worst three',
+  'Which region underperformed in 2025, and when?',
+  'EMEA fell in March. Find the cause and fix it.',
+  'What is below its reorder level right now?',
 ]
 
 export function AgentPanel({ ctx }: { ctx: ToolContext }) {
@@ -105,8 +105,9 @@ export function AgentPanel({ ctx }: { ctx: ToolContext }) {
               </button>
             ))}
             <p className="pt-2 text-[11px] leading-relaxed text-neutral-400">
-              Whichever agent you use, it works through the same 16 tools this page registers —
-              it never receives a row of your data.
+              Whichever agent you use, it works through the same {allTools.length} tools this page
+              registers — it never receives a row of your data, and anything that changes the
+              business waits for your approval.
             </p>
           </div>
         )}

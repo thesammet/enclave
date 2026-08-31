@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { FakeEngine } from '../data/fake-engine'
 import { useStore } from '../store/store'
+import { allTools } from '../tools'
 import { isWebMcpAvailable, registerWebMcpTools } from './webmcp'
+
+const COUNT = allTools.length
 
 const ctx = () => ({ engine: new FakeEngine(), store: useStore })
 
@@ -23,7 +26,7 @@ describe('webmcp adapter', () => {
     Object.assign(document, { modelContext: { registerTool: onDoc } })
     Object.assign(navigator, { modelContext: { registerTool: onNav } })
     registerWebMcpTools(ctx())
-    await vi.waitFor(() => expect(onDoc).toHaveBeenCalledTimes(16))
+    await vi.waitFor(() => expect(onDoc).toHaveBeenCalledTimes(COUNT))
     expect(onNav).not.toHaveBeenCalled()
   })
 
@@ -31,7 +34,7 @@ describe('webmcp adapter', () => {
     const onNav = vi.fn().mockResolvedValue(undefined)
     Object.assign(navigator, { modelContext: { registerTool: onNav } })
     expect(registerWebMcpTools(ctx()).supported).toBe(true)
-    await vi.waitFor(() => expect(onNav).toHaveBeenCalledTimes(16))
+    await vi.waitFor(() => expect(onNav).toHaveBeenCalledTimes(COUNT))
   })
 
   it('passes readOnlyHint through for read-only tools', async () => {
@@ -40,7 +43,7 @@ describe('webmcp adapter', () => {
       modelContext: { registerTool: async (t: unknown) => void calls.push(t) },
     })
     registerWebMcpTools(ctx())
-    await vi.waitFor(() => expect(calls).toHaveLength(16))
+    await vi.waitFor(() => expect(calls).toHaveLength(COUNT))
     const find = (n: string) =>
       calls.find((t) => (t as { name: string }).name === n) as {
         annotations: { readOnlyHint: boolean }
@@ -55,7 +58,7 @@ describe('webmcp adapter', () => {
       modelContext: { registerTool: async (t: unknown) => void calls.push(t) },
     })
     registerWebMcpTools(ctx())
-    await vi.waitFor(() => expect(calls).toHaveLength(16))
+    await vi.waitFor(() => expect(calls).toHaveLength(COUNT))
     const addNote = calls.find((t) => (t as { name: string }).name === 'add_note') as {
       execute: (a: unknown, o: unknown) => Promise<{ content: Array<{ type: string; text: string }> }>
     }
@@ -74,7 +77,7 @@ describe('webmcp adapter', () => {
       modelContext: { registerTool: async (t: unknown) => void calls.push(t) },
     })
     registerWebMcpTools(ctx())
-    await vi.waitFor(() => expect(calls).toHaveLength(16))
+    await vi.waitFor(() => expect(calls).toHaveLength(COUNT))
     const removeCard = calls.find((t) => (t as { name: string }).name === 'remove_card') as {
       execute: (a: unknown, o: unknown) => Promise<{ content: Array<{ text: string }> }>
     }

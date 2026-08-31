@@ -9,7 +9,10 @@ import type { QueryResult, Schema } from './types'
 export class FakeEngine implements QueryEngine {
   schema: Schema | null = null
   filter: string | null = null
+  base: string | null = null
   queries: string[] = []
+  mutations: string[] = []
+  tables: Record<string, string> = {}
   private scripted = new Map<string, QueryResult>()
   private readonly onLoad?: Schema
 
@@ -35,6 +38,21 @@ export class FakeEngine implements QueryEngine {
     const hit = this.scripted.get(sql.trim())
     if (!hit) throw new Error(`unscripted query: ${sql}`)
     return hit
+  }
+
+  async loadTable(table: string, text: string): Promise<void> {
+    this.tables[table] = text
+  }
+
+  async setBase(select: string): Promise<Schema> {
+    this.base = select
+    this.filter = null
+    this.schema = this.onLoad ?? { table: 'data', rowCount: 0, columns: [] }
+    return this.schema
+  }
+
+  async mutate(sql: string): Promise<void> {
+    this.mutations.push(sql)
   }
 
   async setFilter(where: string | null): Promise<void> {

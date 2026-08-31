@@ -1,12 +1,9 @@
 import { isWebMcpAvailable } from '../runtime/webmcp'
 import { navigate } from '../router'
-import { useStore } from '../store/store'
 import { BoardsMenu } from './BoardsMenu'
 import { SettingsMenu } from './SettingsMenu'
 
 export function TopBar() {
-  const schema = useStore((s) => s.schema)
-  const setSchema = useStore((s) => s.setSchema)
   const native = isWebMcpAvailable()
 
   return (
@@ -31,22 +28,7 @@ export function TopBar() {
         {native ? 'WebMCP' : 'Built-in agent'}
       </span>
 
-      {schema && (
-        <span className="truncate text-xs text-neutral-500">
-          {schema.rowCount.toLocaleString()} rows · {schema.columns.length} columns
-        </span>
-      )}
-
       <div className="ml-auto flex items-center gap-1">
-        {schema && (
-          <button
-            onClick={() => setSchema(null)}
-            className="rounded-md px-2 py-1 text-xs text-neutral-600 transition
-              hover:bg-neutral-200/60 dark:text-neutral-300 dark:hover:bg-neutral-800"
-          >
-            Change data
-          </button>
-        )}
         <BoardsMenu />
         <SettingsMenu />
         <a

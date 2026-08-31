@@ -32,6 +32,9 @@ export class DuckDbEngine implements QueryEngine {
   private conn: duckdb.AsyncDuckDBConnection | null = null
   private schema: Schema | null = null
   private booting: Promise<duckdb.AsyncDuckDBConnection> | null = null
+  /** The SELECT that defines `data` before any global filter wraps it. */
+  private baseSelect = 'SELECT * FROM raw'
+  private filter: string | null = null
 
   private async init(): Promise<duckdb.AsyncDuckDBConnection> {
     if (this.conn) return this.conn
@@ -59,8 +62,36 @@ export class DuckDbEngine implements QueryEngine {
     await conn.query('DROP VIEW IF EXISTS data')
     await conn.query('DROP TABLE IF EXISTS raw')
     await conn.insertCSVFromPath(fileName, { name: 'raw', detect: true, header: true })
-    await conn.query('CREATE VIEW data AS SELECT * FROM raw')
+    return this.setBase('SELECT * FROM raw')
+  }
+
+  async loadTable(table: string, text: string): Promise<void> {
+    const conn = await this.init()
+    const file = `${table}.csv`
+    await this.db!.registerFileText(file, text)
+    await conn.query(`DROP TABLE IF EXISTS ${table}`)
+    await conn.insertCSVFromPath(file, { name: table, detect: true, header: true })
+  }
+
+  async setBase(select: string): Promise<Schema> {
+    this.baseSelect = select
+    this.filter = null
+    await this.applyView()
     return this.refreshSchema()
+  }
+
+  private async applyView(): Promise<void> {
+    const conn = await this.init()
+    await conn.query(
+      this.filter
+        ? `CREATE OR REPLACE VIEW data AS SELECT * FROM (${this.baseSelect}) WHERE ${this.filter}`
+        : `CREATE OR REPLACE VIEW data AS ${this.baseSelect}`,
+    )
+  }
+
+  async mutate(sql: string): Promise<void> {
+    const conn = await this.init()
+    await conn.query(sql)
   }
 
   private async refreshSchema(): Promise<Schema> {
@@ -97,12 +128,8 @@ export class DuckDbEngine implements QueryEngine {
 
   /** One statement re-filters every card on the board: they all read `data`. */
   async setFilter(where: string | null): Promise<void> {
-    const conn = await this.init()
-    await conn.query(
-      where
-        ? `CREATE OR REPLACE VIEW data AS SELECT * FROM raw WHERE ${where}`
-        : 'CREATE OR REPLACE VIEW data AS SELECT * FROM raw',
-    )
+    this.filter = where
+    await this.applyView()
     await this.refreshSchema()
   }
 }

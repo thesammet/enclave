@@ -2,8 +2,22 @@
   "headers": [
     {
       "source": "/(.*)",
-      "headers": [{ "key": "Origin-Agent-Cluster", "value": "?1" }]
+      "headers": [
+        {
+          "key": "Origin-Agent-Cluster",
+          "value": "?1"
+        }
+      ]
     }
   ],
-  "rewrites": [{ "source": "/app", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/app/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/app",
+      "destination": "/index.html"
+    }
+  ]
 }

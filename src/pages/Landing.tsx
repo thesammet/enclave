@@ -1,46 +1,63 @@
-import { allTools } from '../tools'
+import type { ReactNode } from 'react'
 import { navigate } from '../router'
 import { useTheme } from '../store/theme'
+import { allTools } from '../tools'
 
-const STEPS = [
+const ARC = [
   {
     n: '01',
-    title: 'Drop a CSV',
-    body: 'DuckDB-WASM holds it in this tab and runs real SQL over it. Nothing is uploaded — there is no server to upload it to.',
+    title: 'It notices',
+    body: 'Revenue by region, month by month. EMEA falls 52% in March 2025 and no other region moves.',
   },
   {
     n: '02',
-    title: 'The agent asks, it never receives',
-    body: 'ChatGPT cannot see a row. It calls the sixteen tools this page registers: profile a column, run a query, read the board back.',
+    title: 'It finds the cause',
+    body: 'Broken down by supplier, one name is missing from March entirely: Aurora Supply sold nothing in EMEA that month.',
   },
   {
     n: '03',
-    title: 'The board builds itself',
-    body: 'KPIs, charts, tables and written findings appear as the agent works. You edit the same board by hand — drag, resize, delete.',
+    title: 'It checks the shelf',
+    body: 'All four Aurora products are still at zero stock, below their reorder level. The revenue hole and the empty shelf are the same fact.',
+  },
+  {
+    n: '04',
+    title: 'You decide',
+    body: 'It proposes a restock order with its reasoning and stops. Nothing changes until you approve it on screen.',
   },
 ]
 
 const GROUPS = [
   { label: 'Explore the data', names: ['get_schema', 'profile_column', 'sample_rows', 'run_sql'] },
   {
-    label: 'Build the board',
+    label: 'Build the analysis',
     names: [
       'add_kpi', 'add_chart', 'add_table', 'add_note', 'update_card',
       'remove_card', 'reorder_cards', 'resize_card', 'highlight_points',
     ],
   },
   { label: 'Read it back and steer', names: ['read_dashboard', 'set_global_filter', 'undo'] },
+  {
+    label: 'Run the store',
+    names: [
+      'search_orders', 'get_product', 'list_low_stock',
+      'list_restock_orders', 'create_restock_order', 'set_product_price',
+    ],
+  },
 ]
 
-function Section({
-  children,
-  className = '',
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function Section({ children, className = '' }: { children: ReactNode; className?: string }) {
+  return <section className={`mx-auto w-full max-w-5xl px-6 ${className}`}>{children}</section>
+}
+
+function Cta({ label = 'Open the back-office' }: { label?: string }) {
   return (
-    <section className={`mx-auto w-full max-w-5xl px-6 ${className}`}>{children}</section>
+    <button
+      onClick={() => navigate('/app')}
+      className="rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition
+        hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white"
+    >
+      {label}
+    </button>
   )
 }
 
@@ -67,27 +84,20 @@ export function Landing() {
         </div>
       </header>
 
-      {/* Hero */}
       <Section className="pt-12 pb-14 text-center">
         <p className="text-xs font-medium uppercase tracking-[0.2em] text-neutral-400">
           Built on WebMCP
         </p>
         <h1 className="mx-auto max-w-3xl pt-4 text-4xl font-semibold leading-[1.1] tracking-tight sm:text-5xl">
-          Analyse the data you are not allowed to paste into ChatGPT.
+          A back-office your AI agent can actually operate.
         </h1>
         <p className="mx-auto max-w-xl pt-5 text-base leading-relaxed text-neutral-600 dark:text-neutral-400">
-          Enclave keeps your file in the browser and hands the agent tools instead of rows. It
-          runs the analysis. It never sees the data.
+          Enclave is a commerce back-office where the store&rsquo;s data loads into the browser and
+          stops there. ChatGPT works the business through {allTools.length} tools — investigating,
+          then proposing changes you approve. It never sees a row.
         </p>
         <div className="flex items-center justify-center gap-3 pt-8">
-          <button
-            onClick={() => navigate('/app')}
-            className="rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white
-              transition hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900
-              dark:hover:bg-white"
-          >
-            Open the workbench
-          </button>
+          <Cta />
           <a
             href="https://github.com/thesammet/enclave"
             target="_blank"
@@ -99,47 +109,52 @@ export function Landing() {
           </a>
         </div>
         <p className="pt-4 text-xs text-neutral-400">
-          No account. No upload. Two sample datasets load in one click.
+          No account, no upload. A demo store is already loaded.
         </p>
       </Section>
 
-      {/* Screenshot */}
       <Section className="pb-20">
         <img
           src="/screenshot.png"
-          alt="Enclave with a dashboard the agent built from a 50,000-row retail dataset"
+          alt="Enclave's overview: store KPIs, revenue by region, and products below their reorder level"
           className="w-full rounded-xl border border-neutral-200 shadow-2xl dark:border-neutral-800"
         />
       </Section>
 
-      {/* The problem */}
       <Section className="border-t border-neutral-200 py-16 dark:border-neutral-800">
         <div className="grid gap-8 md:grid-cols-2">
           <h2 className="text-2xl font-semibold tracking-tight">
-            The best analyst you have access to is locked out of the data that needs analysing.
+            Two things stop an agent being useful in a real business.
           </h2>
           <div className="space-y-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
             <p>
-              Company revenue. Patient records. A user export under GDPR. The moment it leaves the
-              machine it becomes someone else&rsquo;s problem, so it never leaves — and the analysis
-              never happens.
+              <span className="text-neutral-900 dark:text-neutral-100">It cannot see your data.</span>{' '}
+              Revenue, customers, orders — none of it can be pasted into a chat window, so the
+              analysis never happens.
             </p>
             <p>
-              Uploading to a hosted notebook does not fix this. It moves the leak.
+              <span className="text-neutral-900 dark:text-neutral-100">
+                And it should not be clicking around your admin panel.
+              </span>{' '}
+              An agent guessing its way through a UI is slow, brittle, and occasionally
+              catastrophic.
             </p>
             <p className="text-neutral-900 dark:text-neutral-100">
-              But an agent does not need your data. It needs the ability to ask questions of your
-              data. Only one of those has to cross the network.
+              WebMCP answers both. The page states exactly what an agent may do; the data stays
+              where it is; and anything consequential waits for a human.
             </p>
           </div>
         </div>
       </Section>
 
-      {/* How it works */}
       <Section className="border-t border-neutral-200 py-16 dark:border-neutral-800">
-        <h2 className="text-2xl font-semibold tracking-tight">How it works</h2>
-        <div className="grid gap-8 pt-8 md:grid-cols-3">
-          {STEPS.map((s) => (
+        <h2 className="text-2xl font-semibold tracking-tight">From a number to a decision</h2>
+        <p className="max-w-2xl pt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+          The demo store carries one real problem. Watch an agent walk the whole way to it —
+          without ever receiving a row of the data it is reasoning about.
+        </p>
+        <div className="grid gap-8 pt-8 md:grid-cols-4">
+          {ARC.map((s) => (
             <div key={s.n}>
               <div className="font-mono text-xs text-neutral-400">{s.n}</div>
               <h3 className="pt-2 text-sm font-medium">{s.title}</h3>
@@ -149,26 +164,57 @@ export function Landing() {
             </div>
           ))}
         </div>
-
-        <pre className="mt-10 overflow-x-auto rounded-xl border border-neutral-200 bg-white p-5 font-mono text-[11px] leading-relaxed text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400">
-{`  ChatGPT ───→ document.modelContext ──┐
-                                       ├──→  TOOL REGISTRY  ──→  DuckDB-WASM
-  Built-in ──→ OpenAI Responses API ───┘     16 tools             your CSV
-  panel        (your own key)                                     (tab memory)
-
-                        no server · data never leaves the tab`}
-        </pre>
       </Section>
 
-      {/* Tools */}
       <Section className="border-t border-neutral-200 py-16 dark:border-neutral-800">
-        <h2 className="text-2xl font-semibold tracking-tight">Sixteen tools, both directions</h2>
+        <div className="grid gap-8 md:grid-cols-2">
+          <div>
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Nothing changes without you.
+            </h2>
+            <p className="pt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+              Reading is free. Anything that touches the business — a restock order, a price —
+              is <em>proposed</em>. The tool call blocks, a card appears with the agent&rsquo;s
+              reasoning, and the change happens only if you approve it.
+            </p>
+            <p className="pt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+              That pause is the product. It is where the human and the agent actually meet.
+            </p>
+          </div>
+          <div className="rounded-xl border border-amber-500/40 bg-amber-50 p-5 dark:bg-amber-500/5">
+            <div className="text-[10px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-500">
+              Needs your approval
+            </div>
+            <p className="pt-1.5 text-sm font-medium">Order 400 units of Nimbus Wireless Earbuds</p>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-0.5 pt-3 text-[11px]">
+              {[
+                ['Supplier', 'Aurora Supply'],
+                ['Current stock', '0 (reorder at 42)'],
+                ['Reason', 'Zero stock since March; EMEA revenue down 52% while out of stock.'],
+              ].map(([k, v]) => (
+                <div key={k} className="contents">
+                  <dt className="text-neutral-500">{k}</dt>
+                  <dd className="text-neutral-800 dark:text-neutral-200">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="pt-3 text-[10px] text-neutral-500">
+              The agent is waiting. Nothing has changed yet.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      <Section className="border-t border-neutral-200 py-16 dark:border-neutral-800">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {allTools.length} tools, and they read as well as write
+        </h2>
         <p className="max-w-2xl pt-3 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-          Most tool surfaces only let an agent write. Enclave&rsquo;s lets it read the current state
-          of both the data and the board — which is what lets it revise an analysis it did not build
-          itself.
+          Most tool surfaces only let an agent act. Enclave&rsquo;s lets it read the current state of
+          the data, the analysis board and the catalogue — which is what lets it revise work it did
+          not do itself.
         </p>
-        <div className="grid gap-8 pt-8 md:grid-cols-3">
+        <div className="grid gap-8 pt-8 md:grid-cols-4">
           {GROUPS.map((g) => (
             <div key={g.label}>
               <h3 className="text-[11px] font-medium uppercase tracking-wide text-neutral-400">
@@ -189,7 +235,6 @@ export function Landing() {
         </div>
       </Section>
 
-      {/* Proof */}
       <Section className="border-t border-neutral-200 py-16 dark:border-neutral-800">
         <div className="grid gap-8 md:grid-cols-2">
           <div>
@@ -198,35 +243,35 @@ export function Landing() {
             </h2>
             <p className="pt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
               Every tool result passes through one cap — 50 rows and 4 KB — before it can reach an
-              agent. Raw row dumps are refused with a message steering the agent toward
-              aggregation. The Activity Log counts every byte, on screen, the whole time.
+              agent, and you can lower it in settings. Raw row dumps are refused with a message
+              steering the agent toward aggregation.
             </p>
             <p className="pt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-              A full exploratory analysis of fifty thousand rows costs this much:
+              The Activity Log counts every byte, on screen, the whole time. Walking the entire
+              investigation above costs this much:
             </p>
           </div>
           <div className="flex flex-col justify-center rounded-xl border border-neutral-200 bg-white p-8 dark:border-neutral-800 dark:bg-neutral-900">
-            <div className="font-mono text-4xl font-semibold tabular-nums">2,256 B</div>
+            <div className="font-mono text-4xl font-semibold tabular-nums">3,212 B</div>
             <div className="pt-1 text-sm text-neutral-500">left the browser</div>
-            <div className="pt-4 font-mono text-4xl font-semibold tabular-nums">0</div>
+            <div className="pt-5 font-mono text-4xl font-semibold tabular-nums">0</div>
             <div className="pt-1 text-sm text-neutral-500">rows uploaded</div>
           </div>
         </div>
       </Section>
 
-      {/* WebMCP */}
       <Section className="border-t border-neutral-200 py-16 dark:border-neutral-800">
         <div className="grid gap-8 md:grid-cols-2">
           <div>
             <h2 className="text-2xl font-semibold tracking-tight">Works with or without WebMCP</h2>
             <p className="pt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
               WebMCP ships in Chrome 149+ behind an origin trial, or locally via{' '}
-              <code className="text-xs">chrome://flags/#enable-webmcp-testing</code>. There,
-              ChatGPT discovers these sixteen tools and drives the page directly.
+              <code className="text-xs">chrome://flags/#enable-webmcp-testing</code>. There, ChatGPT
+              discovers these tools and operates the store directly.
             </p>
             <p className="pt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
               Everywhere else, the built-in panel runs the same tools with your own OpenAI key. One
-              registry, two runtimes — the capabilities are identical either way.
+              registry, two runtimes — identical capabilities, identical approval gates.
             </p>
           </div>
           <div className="rounded-xl border border-neutral-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900">
@@ -237,33 +282,31 @@ export function Landing() {
 {`node scripts/verify-native-webmcp.mjs \\
      https://enclave-bay.vercel.app
 
-→ native getTools() → 16 tools
+→ native getTools() → ${allTools.length} tools
 → executeTool get_schema →
   Table: data
-  Rows: 50000`}
+  Rows: 59615`}
             </pre>
           </div>
         </div>
       </Section>
 
       <Section className="border-t border-neutral-200 py-16 text-center dark:border-neutral-800">
-        <h2 className="text-2xl font-semibold tracking-tight">Try it on your own file.</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Or bring your own file.
+        </h2>
         <p className="pt-3 text-sm text-neutral-600 dark:text-neutral-400">
-          It will not leave your browser. That is the whole point.
+          Analytics takes any CSV. It will not leave your browser either — that is the whole point.
         </p>
-        <button
-          onClick={() => navigate('/app')}
-          className="mt-7 rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white
-            transition hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900
-            dark:hover:bg-white"
-        >
-          Open the workbench
-        </button>
+        <div className="pt-7">
+          <Cta />
+        </div>
       </Section>
 
       <footer className="mx-auto w-full max-w-5xl border-t border-neutral-200 px-6 py-8 text-xs text-neutral-400 dark:border-neutral-800">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
           <span>Enclave · MIT licensed</span>
+          <span>Northwind Trading Co. is a fictional store; its data is synthetic.</span>
           <a href="https://github.com/thesammet/enclave" target="_blank" rel="noreferrer" className="hover:text-neutral-600">
             Source
           </a>

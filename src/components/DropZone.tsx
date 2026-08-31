@@ -7,7 +7,13 @@ const SAMPLES = [
   { file: 'support-tickets.csv', label: 'Support tickets', hint: '20k rows' },
 ]
 
-export function DropZone({ engine }: { engine: QueryEngine }) {
+export function DropZone({
+  engine,
+  onLoaded,
+}: {
+  engine: QueryEngine
+  onLoaded?: () => void
+}) {
   const setSchema = useStore((s) => s.setSchema)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -19,6 +25,7 @@ export function DropZone({ engine }: { engine: QueryEngine }) {
     setError(null)
     try {
       setSchema(await engine.loadCsv(name, text))
+      onLoaded?.()
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
     } finally {

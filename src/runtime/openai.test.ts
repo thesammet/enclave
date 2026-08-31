@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { FakeEngine } from '../data/fake-engine'
 import { useStore } from '../store/store'
+import { allTools } from '../tools'
 import { type OpenAiLike, runAgentTurn, toOpenAiTools } from './openai'
 
 const ctx = () => ({ engine: new FakeEngine(), store: useStore })
@@ -16,9 +17,9 @@ beforeEach(() => useStore.setState(useStore.getInitialState(), true))
 const base = { apiKey: 'k', model: 'gpt-5' }
 
 describe('openai adapter', () => {
-  it('maps all sixteen tools into the function tool shape', () => {
+  it('maps every registered tool into the function tool shape', () => {
     const tools = toOpenAiTools()
-    expect(tools).toHaveLength(16)
+    expect(tools).toHaveLength(allTools.length)
     expect(tools[0].type).toBe('function')
     expect(tools.find((t) => t.name === 'run_sql')!.parameters.type).toBe('object')
   })

@@ -13,14 +13,14 @@ export function DatasetPanel() {
 
   if (!schema) {
     return (
-      <div className="p-3 text-xs text-neutral-400">
+      <div className="text-xs text-neutral-400">
         No dataset loaded.
       </div>
     )
   }
 
   return (
-    <div className="p-3">
+    <div>
       <div className="pb-2 text-[10px] font-medium uppercase tracking-wide text-neutral-400">
         Columns
       </div>
