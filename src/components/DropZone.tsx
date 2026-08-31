@@ -1,11 +1,14 @@
 import { useRef, useState } from 'react'
+import { STORE_BASE_SELECT } from '../data/bootstrap'
+import { assertLooksLikeCsv } from '../data/csv'
 import type { QueryEngine } from '../data/engine'
 import { useStore } from '../store/store'
 
 const SAMPLES = [
-  { file: 'retail-sales.csv', label: 'Retail sales', hint: '50k rows · 2024–2025' },
-  { file: 'support-tickets.csv', label: 'Support tickets', hint: '20k rows' },
+  { file: 'support-tickets.csv', label: 'Support tickets', hint: '20k rows · 2024–2025' },
+  { file: 'orders.csv', label: 'Orders export', hint: '60k rows · flat order lines' },
 ]
+
 
 export function DropZone({
   engine,
@@ -24,6 +27,7 @@ export function DropZone({
     setBusy(name)
     setError(null)
     try {
+      assertLooksLikeCsv(name, text)
       setSchema(await engine.loadCsv(name, text))
       onLoaded?.()
     } catch (e) {
@@ -91,8 +95,33 @@ export function DropZone({
 
       <div className="flex w-full flex-col gap-2">
         <p className="text-[10px] font-medium uppercase tracking-wide text-neutral-400">
-          Or try a sample
+          Or analyse
         </p>
+        <button
+          onClick={async () => {
+            setBusy('the store')
+            setError(null)
+            try {
+              setSchema(await engine.setBase(STORE_BASE_SELECT))
+              onLoaded?.()
+            } catch (e) {
+              setError(e instanceof Error ? e.message : String(e))
+            } finally {
+              setBusy(null)
+            }
+          }}
+          disabled={Boolean(busy)}
+          className="rounded-lg border border-neutral-200 px-3 py-2 text-left transition
+            hover:border-neutral-400 disabled:opacity-40 dark:border-neutral-800
+            dark:hover:border-neutral-600"
+        >
+          <div className="text-sm text-neutral-900 dark:text-neutral-100">
+            Northwind&rsquo;s own data
+          </div>
+          <div className="text-xs text-neutral-500">
+            Orders joined to the catalogue — the default view
+          </div>
+        </button>
         <div className="grid grid-cols-2 gap-2">
           {SAMPLES.map((s) => (
             <button

@@ -76,7 +76,7 @@ No backend. No accounts. No API route. The only server-side artefact in the
 repository is a `vercel.json` that sets one header. After first load the page
 works offline.
 
-127 tests cover the data layer, the store, all 22 tools, the approval gate and
+133 tests cover the data layer, the store, all 22 tools, the approval gate and
 both runtime adapters. Two scripts are the receipts a judge can run:
 `scripts/e2e-agent.mjs` walks the entire arc against the deployed URL, and
 `scripts/verify-native-webmcp.mjs` proves a real WebMCP browser discovers and

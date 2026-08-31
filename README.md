@@ -117,7 +117,7 @@ board re-runs against whichever dataset is loaded.
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm test         # 127 tests
+npm test         # 133 tests
 npm run build
 ```
 

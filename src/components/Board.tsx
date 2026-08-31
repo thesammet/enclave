@@ -9,9 +9,9 @@ import { TableCard } from './cards/TableCard'
 const SPAN = { 1: 'col-span-1', 2: 'col-span-2', 3: 'col-span-3' } as const
 
 const EXAMPLES = [
-  'Explore this data and build me a dashboard',
-  'Which region underperformed, and when?',
-  'Break revenue down by channel, then filter to EMEA',
+  'Which region underperformed in 2025, and when?',
+  'EMEA fell in March. Find the cause and fix it.',
+  'Break revenue down by supplier, then filter to EMEA',
 ]
 
 export function Board({ engine }: { engine: QueryEngine }) {
