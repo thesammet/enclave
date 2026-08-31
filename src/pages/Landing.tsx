@@ -247,12 +247,13 @@ export function Landing() {
               steering the agent toward aggregation.
             </p>
             <p className="pt-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
-              The Activity Log counts every byte, on screen, the whole time. Walking the entire
-              investigation above costs this much:
+              The Activity Log counts every byte, on screen, the whole time. GPT-5 walking the
+              entire investigation above — sixteen tool calls, four restock orders proposed —
+              cost this much:
             </p>
           </div>
           <div className="flex flex-col justify-center rounded-xl border border-neutral-200 bg-white p-8 dark:border-neutral-800 dark:bg-neutral-900">
-            <div className="font-mono text-4xl font-semibold tabular-nums">3,212 B</div>
+            <div className="font-mono text-4xl font-semibold tabular-nums">7,758 B</div>
             <div className="pt-1 text-sm text-neutral-500">left the browser</div>
             <div className="pt-5 font-mono text-4xl font-semibold tabular-nums">0</div>
             <div className="pt-1 text-sm text-neutral-500">rows uploaded</div>

@@ -91,9 +91,9 @@ judge more than a working one does.
 
 The privacy claim is not rhetorical, it is metered. Every tool result passes
 through one cap — 50 rows and 4 KB, adjustable in settings — before it can reach
-an agent, and the Activity Log counts the bytes. Walking the entire
-investigation above costs **3,212 bytes and zero rows uploaded**, with the
-number on screen the whole time.
+an agent, and the Activity Log counts the bytes. GPT-5 walking the entire
+investigation above — sixteen tool rounds, four restock orders proposed — costs
+**7,758 bytes and zero rows uploaded**, with the number on screen the whole time.
 
 That figure is the argument. It turns "your data is safe" from a promise into
 something a sceptical person can watch tick upward and check.
@@ -139,6 +139,14 @@ Both had to be flattened before anything downstream could read them.
 **A race we only saw in a screenshot.** React StrictMode runs effects twice, and
 two concurrent bootstraps collided on the same `DROP`/`CREATE`. Bootstrap is now
 single-flight per engine, with a test that calls it three times at once.
+
+**An agent will happily spend its whole budget exploring.** The first live run
+against GPT-5 used all ten tool rounds profiling columns and never got to a
+conclusion; raising the ceiling to thirty just moved the wall. What fixed it was
+telling the agent how to spend rounds — group by several dimensions in one query,
+use `list_low_stock` instead of `get_product` per item, and propose the fix as
+soon as the cause is established rather than analysing further. The same
+investigation now finishes in sixteen rounds with no failed calls.
 
 **The native API is string-based.** `executeTool` takes its arguments as a JSON
 string and hands the result envelope back as one; passing an object fails with

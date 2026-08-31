@@ -93,9 +93,12 @@ export const dataTools: ToolDef[] = [
   {
     name: 'run_sql',
     description:
-      'Run a read-only DuckDB SQL SELECT against the table `data` and return the result. ' +
-      'This is your main instrument. Results are capped at 50 rows and 4 KB, so aggregate ' +
-      'rather than selecting raw rows. Note that `data` already reflects any global filter.',
+      'Run a read-only DuckDB SQL SELECT against the table `data` and return the result. This ' +
+      'is your main instrument. DuckDB dialect: bucket months with ' +
+      "strftime(order_date, '%Y-%m'), and compare dates as ISO strings. Group by several " +
+      'dimensions at once rather than issuing one query per dimension. Results are capped at 50 ' +
+      'rows and 4 KB, so aggregate rather than selecting raw rows. `data` already reflects any ' +
+      'global filter.',
     inputSchema: {
       type: 'object',
       properties: {

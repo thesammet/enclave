@@ -48,6 +48,14 @@ discoverable without the agent ever seeing a row.
 
 ![The approval seam](docs/images/approval.png)
 
+## What a real run looks like
+
+Asked *"EMEA fell in March. Find the cause and fix it."*, GPT-5 through the
+built-in panel took **16 tool rounds** and **7,758 bytes**, with no failed calls:
+`get_schema` once, four aggregate queries, a chart with March highlighted, a KPI,
+a table, two written findings, `list_low_stock` to confirm the cause, and four
+restock orders proposed for approval. It never received a row.
+
 ## Nothing changes without you
 
 Reading is free. Anything that touches the business — a restock order, a price —
@@ -127,6 +135,7 @@ Useful dev scripts:
 node scripts/generate-samples.mjs        # regenerate the store's synthetic data
 node scripts/e2e-agent.mjs               # drive the whole arc as an agent would
 node scripts/verify-native-webmcp.mjs    # prove the native API sees the tools
+OPENAI_KEY=sk-… node scripts/live-agent-check.mjs   # measure a real agent run
 ```
 
 ### With native WebMCP

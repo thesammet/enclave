@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { FakeEngine } from '../data/fake-engine'
 import { useStore } from '../store/store'
 import { allTools } from '../tools'
-import { type OpenAiLike, runAgentTurn, toOpenAiTools } from './openai'
+import { MAX_TURNS, type OpenAiLike, runAgentTurn, toOpenAiTools } from './openai'
 
 const ctx = () => ({ engine: new FakeEngine(), store: useStore })
 
@@ -106,7 +106,7 @@ describe('openai adapter', () => {
   })
 
   it('stops after the turn limit rather than looping forever', async () => {
-    const responses = Array.from({ length: 20 }, () => ({
+    const responses = Array.from({ length: MAX_TURNS + 5 }, () => ({
       output: [
         { type: 'function_call', call_id: 'c', name: 'add_note', arguments: '{"markdown":"x"}' },
       ],
@@ -119,8 +119,8 @@ describe('openai adapter', () => {
       ctx: ctx(),
       client,
     })
-    expect(create.mock.calls.length).toBeLessThanOrEqual(10)
-    expect(out.text).toContain('stopped')
+    expect(create.mock.calls.length).toBe(MAX_TURNS)
+    expect(out.text).toContain('carry on')
   })
 
   it('notifies the caller of each tool name for live UI feedback', async () => {
