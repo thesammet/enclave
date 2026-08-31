@@ -21,7 +21,8 @@ page.on('response', async (r) => {
   }
 })
 
-await page.goto('http://localhost:5173/app', { waitUntil: 'domcontentloaded' })
+const origin = process.argv[2] ?? 'http://localhost:5173'
+await page.goto(`${origin}/app`, { waitUntil: 'domcontentloaded' })
 await page.waitForTimeout(5000)
 const skip = page.getByRole('button', { name: 'Skip' })
 if (await skip.count()) { await skip.click(); await page.waitForTimeout(300) }
@@ -75,7 +76,7 @@ const i = rail.lastIndexOf('AGENT')
 console.log(i >= 0 ? rail.slice(i, i + 1400) : '(no agent reply)')
 
 console.log('\n=== BOARD ===')
-await page.goto('http://localhost:5173/app/analytics', { waitUntil: 'domcontentloaded' })
+await page.goto(`${origin}/app/analytics`, { waitUntil: 'domcontentloaded' })
 await page.waitForTimeout(2500)
 console.log((await page.locator('main').innerText()).split('COLUMNS')[0])
 console.log('\napprovals handled:', approved)
