@@ -15,9 +15,6 @@ console.log('API surface:', await page.evaluate(() =>
   Object.getOwnPropertyNames(Object.getPrototypeOf(document.modelContext)),
 ))
 
-await page.getByText('Retail sales').click()
-await page.waitForFunction(() => document.body.innerText.includes('50,000 rows'), { timeout: 90000 })
-
 const tools = await page.evaluate(async () => {
   const list = await document.modelContext.getTools()
   return list.map((t) => t.name)
@@ -34,18 +31,22 @@ const run = async (name, args) =>
       const tools = await document.modelContext.getTools()
       const tool = tools.find((t) => t.name === n)
       const res = await document.modelContext.executeTool(tool, a)
-      return res?.content?.[0]?.text ?? JSON.stringify(res)
+      // The native API hands the envelope back as a JSON string.
+      const parsed = typeof res === 'string' ? JSON.parse(res) : res
+      return parsed?.content?.[0]?.text ?? String(res)
     },
     [name, JSON.stringify(args)],
   )
 
+// The store's data loads at boot; wait until the tools can actually answer.
+for (let i = 0; i < 90; i++) {
+  const r = await run('get_schema', {})
+  if (!r.startsWith('Error')) break
+  await page.waitForTimeout(1000)
+}
+
 console.log('\nexecuteTool get_schema →\n' + (await run('get_schema', {})))
-console.log('\nexecuteTool add_chart →\n' + (await run('add_chart', {
-  title: 'Monthly revenue by region',
-  chartType: 'line',
-  sql: "SELECT strftime(order_date, '%Y-%m') AS month, region, round(sum(revenue)) AS revenue FROM data GROUP BY 1, 2 ORDER BY 1",
-  x: 'month', y: 'revenue', series: 'region', span: 3,
-})))
+console.log('\nexecuteTool list_low_stock →\n' + (await run('list_low_stock', {})))
 
 await page.waitForTimeout(1200)
 await page.screenshot({ path: '/tmp/native.png' })
