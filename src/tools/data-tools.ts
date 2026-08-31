@@ -8,7 +8,13 @@ const limits = (ctx: ToolContext) => ctx.store.getState().resultBudget
 function requireSchema(ctx: ToolContext) {
   const schema = ctx.engine.getSchema()
   if (!schema) {
-    throw new Error('No dataset is loaded. Ask the user to drop a CSV file onto the page.')
+    // Tools are registered before the store's data finishes loading, on purpose:
+    // an agent can discover the page immediately. Say which case this is.
+    throw new Error(
+      'No dataset is loaded yet. The store data loads when the page opens — wait a moment and ' +
+        'call get_schema again. If it keeps failing, the operator can load a CSV on the ' +
+        'Analytics page.',
+    )
   }
   return schema
 }
