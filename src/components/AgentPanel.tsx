@@ -95,20 +95,28 @@ export function AgentPanel({ ctx }: { ctx: ToolContext }) {
       )}
 
       <div ref={scroller} className="flex-1 space-y-3 overflow-y-auto px-3 py-2 text-sm">
-        {messages.length === 0 && apiKey && (
+        {messages.length === 0 && (
           <div className="space-y-1.5">
+            <p className="pb-1 text-[10px] font-medium uppercase tracking-wide text-neutral-400">
+              Try asking
+            </p>
             {SUGGESTIONS.map((s) => (
               <button
                 key={s}
                 onClick={() => send(s)}
+                disabled={!apiKey}
                 className="block w-full rounded-md border border-neutral-200 px-2.5 py-1.5
-                  text-left text-xs text-neutral-500 transition hover:border-neutral-400
-                  hover:text-neutral-900 dark:border-neutral-800 dark:hover:border-neutral-600
-                  dark:hover:text-neutral-100"
+                  text-left text-xs text-neutral-500 transition enabled:hover:border-neutral-400
+                  enabled:hover:text-neutral-900 disabled:cursor-default dark:border-neutral-800
+                  dark:enabled:hover:border-neutral-600 dark:enabled:hover:text-neutral-100"
               >
                 {s}
               </button>
             ))}
+            <p className="pt-2 text-[11px] leading-relaxed text-neutral-400">
+              Whichever agent you use, it works through the same 16 tools this page registers —
+              it never receives a row of your data.
+            </p>
           </div>
         )}
 
